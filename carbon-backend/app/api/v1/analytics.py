@@ -305,7 +305,7 @@ def suggestion(id: int = Query(..., description="Organization ID"), db: Session 
     # Invoke the chain with the dictionary
     chain = prompt | llm
     response = chain.invoke({"product_info": combined_dict})
+    send = {"message": response.content.strip()}
 
 
-
-    return response.content.strip()
+    return send
