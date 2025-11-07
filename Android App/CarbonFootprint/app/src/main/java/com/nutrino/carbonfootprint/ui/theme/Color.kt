@@ -2,30 +2,47 @@ package com.nutrino.carbonfootprint.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Light Theme Colors - Nature inspired palette
-val LeafGreen80 = Color(0xFF8BC34A)      // Primary - Vibrant leaf green
-val ForestGreen80 = Color(0xFF4CAF50)    // Secondary - Forest green
-val EarthBrown80 = Color(0xFF8D6E63)     // Tertiary - Earth brown
-val SkyBlue80 = Color(0xFF81C784)        // Accent - Sky blue green
+// Modern Light Theme Colors - Professional eco-palette
+val PrimaryGreen = Color(0xFF10B981)          // Modern emerald green
+val SecondaryGreen = Color(0xFF059669)        // Deep emerald
+val TertiaryGreen = Color(0xFF34D399)         // Light emerald
+val AccentTeal = Color(0xFF14B8A6)            // Teal accent
 
-// Dark Theme Colors - Deeper nature tones
-val DeepGreen40 = Color(0xFF2E7D32)      // Primary - Deep forest green
-val OliveGreen40 = Color(0xFF388E3C)     // Secondary - Olive green
-val DarkBrown40 = Color(0xFF5D4037)      // Tertiary - Dark earth brown
-val DarkTeal40 = Color(0xFF00695C)       // Accent - Dark teal
+// Modern Dark Theme Colors
+val DarkPrimaryGreen = Color(0xFF059669)      // Deep emerald for dark
+val DarkSecondaryGreen = Color(0xFF047857)    // Darker emerald
+val DarkTertiaryGreen = Color(0xFF10B981)     // Brighter for dark mode
+val DarkAccentTeal = Color(0xFF0D9488)        // Darker teal
 
-// Additional nature colors for UI elements
-val MintGreen = Color(0xFFE8F5E8)        // Light background
-val SageGreen = Color(0xFF9CCC65)        // Cards and surfaces
-val WarmBeige = Color(0xFFF1F8E9)        // Alternative light background
-val EcoBlue = Color(0xFF26A69A)          // Action buttons and links
-val RecycleOrange = Color(0xFFFFB74D)    // Warning/accent colors
-val EarthRed = Color(0xFFE57373)         // Error states
-val CleanWhite = Color(0xFFFAFAFA)       // Pure surfaces
-val CarbonGray = Color(0xFF546E7A)       // Subtle text and borders
+// Background colors - Clean and modern
+val LightBackground = Color(0xFFF8FAFC)       // Soft gray-white
+val LightSurface = Color(0xFFFFFFFF)          // Pure white
+val LightSurfaceVariant = Color(0xFFF1F5F9)   // Light slate
+val DarkBackground = Color(0xFF0F172A)        // Deep navy
+val DarkSurface = Color(0xFF1E293B)           // Slate gray
+val DarkSurfaceVariant = Color(0xFF334155)    // Medium slate
 
-// Semantic colors for carbon footprint data
-val LowEmissionGreen = Color(0xFF4CAF50)
-val MediumEmissionYellow = Color(0xFFFFC107)
-val HighEmissionRed = Color(0xFFF44336)
-val NeutralGray = Color(0xFF9E9E9E)
+// Accent colors for data visualization
+val Scope1Color = Color(0xFF8B5CF6)           // Purple for Scope 1
+val Scope2Color = Color(0xFF3B82F6)           // Blue for Scope 2
+val Scope3Color = Color(0xFFF59E0B)           // Amber for Scope 3
+
+// Semantic colors - Modern and vibrant
+val SuccessGreen = Color(0xFF10B981)
+val WarningOrange = Color(0xFFF59E0B)
+val ErrorRed = Color(0xFFEF4444)
+val InfoBlue = Color(0xFF3B82F6)
+
+// Gradient colors
+val GradientStart = Color(0xFF10B981)
+val GradientEnd = Color(0xFF059669)
+
+// Text colors
+val OnLightBackground = Color(0xFF1E293B)
+val OnDarkBackground = Color(0xFFF8FAFC)
+val TextSecondary = Color(0xFF64748B)
+val TextDisabled = Color(0xFF94A3B8)
+
+// Border and divider
+val BorderLight = Color(0xFFE2E8F0)
+val BorderDark = Color(0xFF475569)

@@ -2,7 +2,6 @@ package com.nutrino.carbonfootprint.presentation.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Lightbulb
@@ -10,6 +9,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,24 +48,28 @@ fun DashboardScreen(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(vertical = 16.dp)
+            .padding(horizontal = 20.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp),
+        contentPadding = PaddingValues(vertical = 20.dp)
     ) {
+        // Header
         item {
             Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
                     text = "🌱 Carbon Footprint",
-                    fontSize = 28.sp,
+                    fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
                 )
                 Text(
                     text = "Monitor and reduce your environmental impact",
-                    fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    fontSize = 15.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    fontWeight = FontWeight.Normal
                 )
             }
         }
@@ -76,10 +80,10 @@ fun DashboardScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                        containerColor = MaterialTheme.colorScheme.primary
                     ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-                    shape = RoundedCornerShape(16.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp),
                     onClick = {
                         navController.navigate(SUGGESTION_SCREEN)
                     }
@@ -87,38 +91,39 @@ fun DashboardScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(20.dp),
+                            .padding(24.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(16.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Lightbulb,
                                 contentDescription = "AI Suggestions",
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(40.dp)
+                                tint = Color.White,
+                                modifier = Modifier.size(32.dp)
                             )
                             Column {
                                 Text(
                                     text = "🤖 AI-Powered Insights",
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 18.sp,
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                    color = Color.White
                                 )
                                 Text(
-                                    text = "Get personalized sustainability recommendations",
-                                    fontSize = 14.sp,
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                                    text = "Get personalized sustainability tips",
+                                    fontSize = 13.sp,
+                                    color = Color.White.copy(alpha = 0.9f)
                                 )
                             }
                         }
                         Icon(
                             imageVector = Icons.Default.ArrowForward,
                             contentDescription = "View",
-                            tint = MaterialTheme.colorScheme.primary,
+                            tint = Color.White,
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -130,23 +135,24 @@ fun DashboardScreen(
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surface
-                )
+                ),
+                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.12f))
             ) {
                 Column(
-                    modifier = Modifier.padding(20.dp)
+                    modifier = Modifier.padding(24.dp)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        modifier = Modifier.padding(bottom = 16.dp)
+                        modifier = Modifier.padding(bottom = 20.dp)
                     ) {
                         Text(
                             text = "📊",
-                            fontSize = 24.sp
+                            fontSize = 28.sp
                         )
                         Text(
                             text = "Emissions Overview (Last 30 Days)",
@@ -164,40 +170,46 @@ fun DashboardScreen(
                                     .height(200.dp),
                                 contentAlignment = Alignment.Center
                             ) {
-                                CircularProgressIndicator()
+                                CircularProgressIndicator(
+                                    color = MaterialTheme.colorScheme.primary
+                                )
                             }
                         }
                         is KpisUIState.Success -> {
                             (kpisState as KpisUIState.Success).data?.let { kpis ->
                                 Column(
-                                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                                    verticalArrangement = Arrangement.spacedBy(16.dp)
                                 ) {
                                     MetricCard(
                                         title = "Total CO₂e",
                                         value = "${String.format("%.2f", kpis.total_co2e_kg)} kg",
-                                        color = MaterialTheme.colorScheme.primary
+                                        color = MaterialTheme.colorScheme.primary,
+                                        icon = "🌍"
                                     )
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        horizontalArrangement = Arrangement.spacedBy(12.dp)
                                     ) {
                                         MetricCard(
                                             title = "Scope 1",
                                             value = "${String.format("%.2f", kpis.scope1_kg)} kg",
-                                            color = MaterialTheme.colorScheme.secondary,
-                                            modifier = Modifier.weight(1f)
+                                            color = com.nutrino.carbonfootprint.ui.theme.Scope1Color,
+                                            modifier = Modifier.weight(1f),
+                                            icon = "🔥"
                                         )
                                         MetricCard(
                                             title = "Scope 2",
                                             value = "${String.format("%.2f", kpis.scope2_kg)} kg",
-                                            color = MaterialTheme.colorScheme.tertiary,
-                                            modifier = Modifier.weight(1f)
+                                            color = com.nutrino.carbonfootprint.ui.theme.Scope2Color,
+                                            modifier = Modifier.weight(1f),
+                                            icon = "⚡"
                                         )
                                         MetricCard(
                                             title = "Scope 3",
                                             value = "${String.format("%.2f", kpis.scope3_kg)} kg",
-                                            color = MaterialTheme.colorScheme.error,
-                                            modifier = Modifier.weight(1f)
+                                            color = com.nutrino.carbonfootprint.ui.theme.Scope3Color,
+                                            modifier = Modifier.weight(1f),
+                                            icon = "✈️"
                                         )
                                     }
                                 }
@@ -221,23 +233,24 @@ fun DashboardScreen(
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f)
-                )
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.12f))
             ) {
                 Column(
-                    modifier = Modifier.padding(20.dp)
+                    modifier = Modifier.padding(24.dp)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        modifier = Modifier.padding(bottom = 16.dp)
+                        modifier = Modifier.padding(bottom = 20.dp)
                     ) {
                         Text(
                             text = "🏢",
-                            fontSize = 24.sp
+                            fontSize = 28.sp
                         )
                         Text(
                             text = "Organization Summary",
@@ -255,32 +268,33 @@ fun DashboardScreen(
                                     .height(150.dp),
                                 contentAlignment = Alignment.Center
                             ) {
-                                CircularProgressIndicator()
+                                CircularProgressIndicator(
+                                    color = MaterialTheme.colorScheme.primary
+                                )
                             }
                         }
                         is SummaryUIState.Success -> {
                             (summaryState as SummaryUIState.Success).data?.let { summary ->
                                 Column(
-                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                    verticalArrangement = Arrangement.spacedBy(12.dp)
                                 ) {
-                                    Text("Total Facilities: ${summary.facilities_count}")
-                                    Text("Last Event: ${summary.last_event_at ?: "No events"}")
+                                    SummaryRow("Total Facilities", "${summary.facilities_count}")
+                                    SummaryRow("Last Event", summary.last_event_at ?: "No events")
 
                                     if (summary.topCategories.isNotEmpty()) {
                                         Text(
                                             text = "Top Categories:",
-                                            fontWeight = FontWeight.Medium,
-                                            modifier = Modifier.padding(top = 8.dp)
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontSize = 16.sp,
+                                            color = MaterialTheme.colorScheme.onSurface,
+                                            modifier = Modifier.padding(top = 12.dp, bottom = 8.dp)
                                         )
                                         summary.topCategories.take(5).forEach { categoryArray ->
                                             if (categoryArray.size >= 2) {
-                                                Row(
-                                                    modifier = Modifier.fillMaxWidth(),
-                                                    horizontalArrangement = Arrangement.SpaceBetween
-                                                ) {
-                                                    Text(categoryArray[0]) // category name
-                                                    Text("${String.format("%.2f", categoryArray[1].toDoubleOrNull() ?: 0.0)} kg") // category value
-                                                }
+                                                CategoryRow(
+                                                    categoryName = categoryArray[0],
+                                                    value = "${String.format("%.2f", categoryArray[1].toDoubleOrNull() ?: 0.0)} kg"
+                                                )
                                             }
                                         }
                                     }
@@ -307,34 +321,112 @@ fun DashboardScreen(
 fun MetricCard(
     title: String,
     value: String,
-    color: androidx.compose.ui.graphics.Color,
-    modifier: Modifier = Modifier
+    color: Color,
+    modifier: Modifier = Modifier,
+    icon: String = ""
 ) {
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
             containerColor = color.copy(alpha = 0.15f)
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        shape = RoundedCornerShape(12.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
+        border = androidx.compose.foundation.BorderStroke(1.5.dp, color.copy(alpha = 0.3f))
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(
-                text = title,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                color = color.copy(alpha = 0.8f)
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = title,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                )
+                if (icon.isNotEmpty()) {
+                    Text(
+                        text = icon,
+                        fontSize = 20.sp
+                    )
+                }
+            }
             Text(
                 text = value,
-                fontSize = 18.sp,
+                fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
                 color = color
             )
         }
     }
 }
+
+@Composable
+fun SummaryRow(
+    label: String,
+    value: String
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = label,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+        )
+        Text(
+            text = value,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+    }
+}
+
+@Composable
+fun CategoryRow(
+    categoryName: String,
+    value: String
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+        ),
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = categoryName,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = value,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+    }
+}
+
