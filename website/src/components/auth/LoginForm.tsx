@@ -28,7 +28,7 @@ export default function LoginForm() {
       const result = await loginApi({ email, password });
       
       // Set token in Redux and localStorage
-      dispatch(setToken(result.access_token));
+      dispatch(setToken(result.access_token || null));
       
       // Fetch current user details
       await dispatch(fetchCurrentUser()).unwrap();
