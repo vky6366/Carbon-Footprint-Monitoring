@@ -7,7 +7,11 @@ import type { TrendPoint } from '@/types/analytics/analyticstypes';
 
 export default function EmissionsTrend() {
   const to = useMemo(() => new Date().toISOString().split('T')[0], []);
-  const from = useMemo(() => new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], []);
+  const from = useMemo(() => {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    return thirtyDaysAgo.toISOString().split('T')[0];
+  }, []);
 
   const { data: trendData = [], isLoading: loading, isError, error } = useTrend(from, to, 'day');
 

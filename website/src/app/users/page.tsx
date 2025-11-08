@@ -2,19 +2,11 @@
 import React, { useState } from "react";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import DashboardHeader from '@/components/dashboard/Header';
-import { Users, UserPlus, Mail, Shield, Eye, EyeOff, Edit2, Trash2, Plus, Search } from 'lucide-react';
+import { Users, UserPlus, Mail, Shield, Eye, EyeOff, Edit2, Trash2, Search, AlertCircle, Loader2 } from 'lucide-react';
+import { useUsers, useCreateUser } from '@/lib/tenants/hooks';
 import type { TenantUser, CreateUserRequest } from '@/types/tenants/tenantstypes';
 
-// Mock data for demonstration - replace with actual API calls
-const mockUsers: TenantUser[] = [
-  { id: 1, email: 'admin@company.com', role: 'admin', is_active: true },
-  { id: 2, email: 'manager@company.com', role: 'manager', is_active: true },
-  { id: 3, email: 'user@company.com', role: 'viewer', is_active: true },
-  { id: 4, email: 'inactive@company.com', role: 'viewer', is_active: false },
-];
-
 export default function UsersPage() {
-  const [users] = useState<TenantUser[]>(mockUsers);
   const [searchQuery, setSearchQuery] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [newUser, setNewUser] = useState<CreateUserRequest>({
@@ -23,6 +15,10 @@ export default function UsersPage() {
     role: 'viewer'
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const { data: users = [], isLoading, isError, error: usersError } = useUsers();
+  const createUserMutation = useCreateUser();
 
   const filteredUsers = users.filter(user =>
     user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -32,7 +28,7 @@ export default function UsersPage() {
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
       case 'admin': return 'bg-red-500/20 text-red-400 border-red-500/30';
-      case 'manager': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+      case 'analyst': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
       case 'viewer': return 'bg-green-500/20 text-green-400 border-green-500/30';
       default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
     }
@@ -40,10 +36,24 @@ export default function UsersPage() {
 
   const handleAddUser = (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would call your API to create the user
-    console.log('Creating user:', newUser);
-    setShowAddModal(false);
-    setNewUser({ email: '', password: '', role: 'viewer' });
+    setError(null);
+
+    if (!newUser.email || !newUser.password) {
+      setError('Email and password are required');
+      return;
+    }
+
+    createUserMutation.mutate(newUser, {
+      onSuccess: () => {
+        setShowAddModal(false);
+        setNewUser({ email: '', password: '', role: 'viewer' });
+        setError(null);
+      },
+      onError: (err: Error) => {
+        console.error('Failed to create user:', err);
+        setError(err.message || 'Failed to create user');
+      }
+    });
   };
 
   return (
@@ -87,6 +97,17 @@ export default function UsersPage() {
               </div>
             </div>
 
+            {/* Error Display */}
+            {(isError || error) && (
+              <div className="mb-6 bg-red-900/50 border border-red-700 rounded-lg p-4 flex items-center gap-3">
+                <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
+                <div>
+                  <p className="text-red-400 font-medium">Error</p>
+                  <p className="text-red-300 text-sm">{usersError?.message || error}</p>
+                </div>
+              </div>
+            )}
+
             {/* Users Table */}
             <div className="bg-gray-800/40 backdrop-blur-sm rounded-xl border border-gray-700/50 overflow-hidden">
               <table className="w-full">
@@ -107,63 +128,80 @@ export default function UsersPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredUsers.map((user, index) => (
-                    <tr
-                      key={user.id}
-                      className={`border-b border-gray-700/30 hover:bg-gray-800/30 transition-colors ${
-                        index === filteredUsers.length - 1 ? 'border-b-0' : ''
-                      }`}
-                    >
-                      <td className="py-4 px-6">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-emerald-500/20 rounded-full flex items-center justify-center">
-                            <Mail className="w-5 h-5 text-emerald-400" />
-                          </div>
-                          <div>
-                            <div className="text-white font-medium">{user.email}</div>
-                            <div className="text-gray-400 text-sm">ID: {user.id}</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="py-4 px-6">
-                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getRoleBadgeColor(user.role)}`}>
-                          <Shield className="w-3 h-3 mr-1" />
-                          {user.role}
-                        </span>
-                      </td>
-                      <td className="py-4 px-6">
-                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${
-                          user.is_active 
-                            ? 'bg-green-500/20 text-green-400 border-green-500/30' 
-                            : 'bg-red-500/20 text-red-400 border-red-500/30'
-                        }`}>
-                          {user.is_active ? 'Active' : 'Inactive'}
-                        </span>
-                      </td>
-                      <td className="py-4 px-6">
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            onClick={() => console.log('Edit user:', user.id)}
-                            className="p-2 text-gray-400 hover:text-emerald-400 transition-colors"
-                            title="Edit User"
-                          >
-                            <Edit2 className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => console.log('Delete user:', user.id)}
-                            className="p-2 text-gray-400 hover:text-red-400 transition-colors"
-                            title="Delete User"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                  {isLoading ? (
+                    <tr>
+                      <td colSpan={4} className="py-8 text-center">
+                        <div className="flex items-center justify-center gap-3 text-gray-400">
+                          <Loader2 className="w-6 h-6 animate-spin" />
+                          Loading users...
                         </div>
                       </td>
                     </tr>
-                  ))}
+                  ) : filteredUsers.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="py-8 text-center text-gray-400">
+                        {searchQuery ? "No users found matching your search." : "No users available. Add one to get started."}
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredUsers.map((user: TenantUser, index: number) => (
+                      <tr
+                        key={user.id}
+                        className={`border-b border-gray-700/30 hover:bg-gray-800/30 transition-colors ${
+                          index === filteredUsers.length - 1 ? 'border-b-0' : ''
+                        }`}
+                      >
+                        <td className="py-4 px-6">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-emerald-500/20 rounded-full flex items-center justify-center">
+                              <Mail className="w-5 h-5 text-emerald-400" />
+                            </div>
+                            <div>
+                              <div className="text-white font-medium">{user.email}</div>
+                              <div className="text-gray-400 text-sm">ID: {user.id}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="py-4 px-6">
+                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getRoleBadgeColor(user.role)}`}>
+                            <Shield className="w-3 h-3 mr-1" />
+                            {user.role}
+                          </span>
+                        </td>
+                        <td className="py-4 px-6">
+                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${
+                            user.is_active 
+                              ? 'bg-green-500/20 text-green-400 border-green-500/30' 
+                              : 'bg-red-500/20 text-red-400 border-red-500/30'
+                          }`}>
+                            {user.is_active ? 'Active' : 'Inactive'}
+                          </span>
+                        </td>
+                        <td className="py-4 px-6">
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => console.log('Edit user:', user.id)}
+                              className="p-2 text-gray-400 hover:text-emerald-400 transition-colors"
+                              title="Edit User"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => console.log('Delete user:', user.id)}
+                              className="p-2 text-gray-400 hover:text-red-400 transition-colors"
+                              title="Delete User"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
               
-              {filteredUsers.length === 0 && (
+              {filteredUsers.length === 0 && !isLoading && !isError && (
                 <div className="p-8 text-center text-gray-400">
                   No users found matching your search criteria.
                 </div>
@@ -188,7 +226,7 @@ export default function UsersPage() {
                     {/* Email */}
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Email Address
+                        Email Address *
                       </label>
                       <input
                         type="email"
@@ -203,7 +241,7 @@ export default function UsersPage() {
                     {/* Password */}
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Password
+                        Password *
                       </label>
                       <div className="relative">
                         <input
@@ -211,8 +249,9 @@ export default function UsersPage() {
                           value={newUser.password}
                           onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
                           className="w-full px-4 py-3 pr-12 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                          placeholder="Enter secure password"
+                          placeholder="Enter secure password (min 8 chars)"
                           required
+                          minLength={8}
                         />
                         <button
                           type="button"
@@ -235,25 +274,44 @@ export default function UsersPage() {
                         className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                       >
                         <option value="viewer">Viewer</option>
-                        <option value="manager">Manager</option>
+                        <option value="analyst">Analyst</option>
                         <option value="admin">Admin</option>
                       </select>
                     </div>
+
+                    {/* Error Display */}
+                    {error && (
+                      <div className="p-3 bg-red-900/50 border border-red-700 rounded-lg">
+                        <p className="text-sm text-red-400">{error}</p>
+                      </div>
+                    )}
 
                     {/* Buttons */}
                     <div className="flex gap-3 pt-4">
                       <button
                         type="button"
-                        onClick={() => setShowAddModal(false)}
+                        onClick={() => {
+                          setShowAddModal(false);
+                          setError(null);
+                        }}
                         className="flex-1 px-4 py-3 text-gray-300 border border-gray-600 rounded-lg hover:bg-gray-700/50 transition-colors"
+                        disabled={createUserMutation.isPending}
                       >
                         Cancel
                       </button>
                       <button
                         type="submit"
-                        className="flex-1 px-4 py-3 bg-emerald-500 text-gray-900 rounded-lg hover:bg-emerald-600 transition-colors font-semibold"
+                        disabled={createUserMutation.isPending}
+                        className="flex-1 px-4 py-3 bg-emerald-500 text-gray-900 rounded-lg hover:bg-emerald-600 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                       >
-                        Add User
+                        {createUserMutation.isPending ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Creating...
+                          </>
+                        ) : (
+                          'Add User'
+                        )}
                       </button>
                     </div>
                   </form>

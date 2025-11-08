@@ -72,7 +72,7 @@ export default function SignUpForm() {
       })).unwrap();
       
       // On successful signup, set token and redirect to dashboard
-      dispatch(setToken(result.access_token));
+      dispatch(setToken(result.access_token || null));
       router.push('/dashboard');
     } catch (err: any) {
       // Log detailed error to console for debugging

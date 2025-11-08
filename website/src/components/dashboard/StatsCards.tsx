@@ -15,7 +15,11 @@ interface StatCard {
 export default function StatsCards() {
   // derive default range (last 30 days)
   const to = useMemo(() => new Date().toISOString().split('T')[0], []);
-  const from = useMemo(() => new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], []);
+  const from = useMemo(() => {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    return thirtyDaysAgo.toISOString().split('T')[0];
+  }, []);
 
   const { data: kpis, isLoading: loading, isError, error } = useKpis(from, to);
 
