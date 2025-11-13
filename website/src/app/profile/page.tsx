@@ -8,6 +8,8 @@ import { ProfileData } from '@/types/auth/profile';
 import { me } from '@/app/api/auth/me/route';
 import { useToast } from '@/components/ui/Toast';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import { PageLayout } from '@/components/layout/PageLayout';
+import { User } from 'lucide-react';
 
 export default function ProfilePage() {
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
@@ -37,9 +39,11 @@ export default function ProfilePage() {
 
   return (
     <ProtectedRoute>
-      <div className="max-w-6xl mx-auto p-8">
-        <h1 className="text-5xl font-bold mb-12">My Profile</h1>
-
+      <PageLayout
+        title="My Profile"
+        description="Manage your account information and preferences"
+        icon={User}
+      >
         {isLoading ? (
           <div className="text-center py-8 text-gray-400">Loading profile...</div>
         ) : profileData ? (
@@ -52,7 +56,7 @@ export default function ProfilePage() {
             Failed to load profile data. Please try refreshing the page.
           </div>
         )}
-      </div>
+      </PageLayout>
     </ProtectedRoute>
   );
 }
