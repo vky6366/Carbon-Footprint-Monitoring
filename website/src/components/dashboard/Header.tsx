@@ -95,7 +95,7 @@ export default function DashboardHeader() {
             <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center">
               <div className="w-5 h-5 rounded-full border-2 border-white/80" />
             </div>
-            <span className="text-xl font-bold text-white">EcoTrack</span>
+            <span className="text-xl font-bold text-white">Carbon Footprint</span>
           </Link>
 
           {/* Navigation */}
